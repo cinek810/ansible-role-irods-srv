@@ -1,0 +1,23 @@
+- name: install_postgresql
+  yum:
+    name: postgresql
+    state: present
+    
+
+- name: create_irods_user
+  postgresql_user:
+    name: icatUser
+    password: icatPassword
+
+- name: create_irods_database
+  postgresql_db:
+      state: present
+      name: icatDB
+      
+
+- name: grant_icat_user_permissions_on_DB
+    database: icatDB
+    privs: ALL
+    type: table
+    objs: ALL_IN_SCHEMA
+    

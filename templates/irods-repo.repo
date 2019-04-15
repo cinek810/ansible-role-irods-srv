@@ -1,0 +1,9 @@
+[renci-irods]
+name=RENCI iRODS Repository
+baseurl=https://packages.irods.org/yum/pool/centos{{ ansible_distribution_major_version }}/$basearch
+enabled=0
+gpgcheck=1
+repo_gpgcheck=0
+gpgkey=https://packages.irods.org/irods-signing-key.asc
+proxy=http://{{intermediate_proxy}}
+

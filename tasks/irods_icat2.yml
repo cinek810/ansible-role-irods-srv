@@ -1,0 +1,38 @@
+- name: install_postgresql
+  yum:
+    name: 
+    - postgresql
+    - postgresql-server
+    - irods-database-plugin-postgres
+    state: present  
+  register: install_postgresql
+
+- name: initialize_postres_database
+  shell: postgresql-setup initdb
+  when: install_postgresql.changed
+
+- name: create_irods_user
+  postgresql_user:
+    name: "{{ irods.catalogue.db_user }}" 
+    password: "{{ irods.catalogue.db_password }}"
+
+- name: create_irods_database
+  postgresql_db:
+      state: present
+      name: "{{ irods.catalogue.db_name }}"
+      
+
+- name: grant_icat_user_permissions_on_DB
+  postgresql_privs:
+    database: "{{ irods.catalogue.db_name }}"
+    privs: ALL
+    type: table
+    objs: ALL_IN_SCHEMA
+    host: " {{ irods.catalugoe.db_host }}"
+
+- name: make_sure_postgresql_is_runing
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+        

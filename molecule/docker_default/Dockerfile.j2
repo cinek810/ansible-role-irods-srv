@@ -1,0 +1,61 @@
+# Molecule managed
+
+{% if item.registry is defined %}
+FROM {{ item.registry.url }}/{{ item.image }}
+{% else %}
+FROM {{ item.image }}
+{% endif %}
+
+ENV container docker
+
+{% if item.image == "centos:6" %}
+RUN echo "proxy=http://10.234.56.23:3128" >> /etc/yum.conf
+RUN yum makecache fast \
+ && yum -y update \
+ && yum -y install \
+      epel-release \
+      initscripts \
+      rsync \
+      net-tools \
+      python-argparse \
+      yum-plugin-verify \
+      yum-utils \
+      sudo \
+      which \
+      wget \
+      authconfig \
+      iproute \
+ && yum clean all;
+RUN touch /var/lib/rpm/*;
+RUN rm -rf /etc/init/serial.conf /etc/init/tty.conf;
+RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers;
+RUN touch /var/lib/rpm/*;
+CMD [ "/sbin/init" ]
+{% elif item.image == "centos:7" %}
+RUN echo "proxy=http://10.234.56.23:3128" >> /etc/yum.conf
+RUN yum makecache fast && yum -y update   \
+    && yum -y install python sudo yum-plugin-ovl bash iproute  \
+    && yum clean all \
+    && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
+    && sed -i 's/plugins=0/plugins=1/g' /etc/yum.conf \
+    && cp /bin/true /sbin/agetty;
+RUN touch /var/lib/rpm/*;
+RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+rm -f /lib/systemd/system/multi-user.target.wants/*;\
+rm -f /etc/systemd/system/*.wants/*;\
+rm -f /lib/systemd/system/local-fs.target.wants/*; \
+rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+rm -f /lib/systemd/system/basic.target.wants/*;\
+rm -f /lib/systemd/system/anaconda.target.wants/*;\
+rm -f /etc/init.d/udev*;
+CMD [ "/usr/sbin/init" ]
+{% elif item.image.startswith("ubuntu") %}
+RUN sed -i "s/^exit 101$/exit 0/" /usr/sbin/policy-rc.d;
+RUN echo 'Acquire::http::proxy "http://10.234.56.23:3128";' > /etc/apt/apt.conf.d/proxy.conf ; \
+    echo 'Acquire::ftp::proxy "http://10.234.56.23:3128";' >> /etc/apt/apt.conf.d/proxy.conf;\
+    echo 'Acquire::https::proxy "http://10.234.56.23:3128";' >> /etc/apt/apt.conf.d/proxy.conf;
+RUN apt-get update && apt-get install -y python sudo bash ca-certificates iproute2 kmod && apt-get clean;
+RUN rm -f /etc/systemd/system/getty.target.wants/getty*;
+CMD [ "/sbin/init"]
+{% endif %}

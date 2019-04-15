@@ -1,0 +1,24 @@
+{% macro allIPList(host) -%}
+        { "address":  "{{ host.DNSAddress }}" },
+            {% for ipAddress in host.addresses %}
+              { "address": "{{ipAddress}}" } {% if not loop.last %},{% endif %}
+            {% endfor %}
+{%- endmacro %}
+{
+	"host_entries": [
+    {% for host in irods.hosts %}
+    {
+      {% if ansible_default_ipv4.address in host.addresses %}
+        "address_type": "local",
+      {% else %}
+        "address_type": "remote",
+      {% endif %}
+        "addresses": [
+               {{ allIPList(host) }}{%- if host.RRDNS is defined and ansible_default_ipv4.address in host.addresses %}, 
+               { "address": "{{host.RRDNS}}" }{% endif %}
+              
+                      ]
+    } {% if not loop.last %},{% endif %}
+    {% endfor %}
+]
+}

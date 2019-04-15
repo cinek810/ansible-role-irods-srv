@@ -1,0 +1,49 @@
+- name: create_irods_users
+  user:
+    name: "{{ item.user_name }}"
+    uid:  "{{ item.user_uid }}"
+  loop:
+    "{{ sysUsers }}"
+  when: sysUsers is defined and item.role_name == "irodsServer" 
+
+- name: install_irods_server_package
+  yum:
+    name: 
+    - irods-server
+    - irods-database-plugin-postgres
+    - irods-rule-engine-plugin-python 
+    state: present
+    enablerepo: renci-irods
+
+- name: make_sure_hostname_is_fqdn
+  hostname: 
+    name: "{{ ansible_hostname }}.{{ irods.domain }}"
+  when: 'irods.domain is not in ansible_hostname'
+
+- name: create_unattended_installation_json
+  template:
+    src: unattended_install.json.j2
+    dest: /root/unattended_install.json
+  register: create_unattended_installation_json
+
+- name: make_sure_core_py_exists
+  file:
+    path: /etc/irods/core.py
+    state: touch
+
+- name: run_irods_installation_script
+  shell:  python /var/lib/irods/scripts/setup_irods.py --json_configuration_file=/root/unattended_install.json
+  environment:
+    http_proxy: "{{ intermediate_http_proxy }}"
+    https_proxy: "{{ intermediate_proxy }}"
+#  when: create_unattended_installation_json.changed
+  async: 120
+  poll: 1
+
+- name: remove_default_resource
+  shell: iadmin rmresc "{{ ansible_hostname }}_default_resource"
+  become_user: "{{ localIrodsUser }}"
+  failed_when: remove_default_resource.rc != 0 and "CAT_NO_ROWS_FOUND" not in remove_default_resource.stderr 
+  register: remove_default_resource
+
+

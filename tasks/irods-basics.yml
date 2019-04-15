@@ -1,0 +1,19 @@
+- name: configure_irods_repository
+  template:
+    src: irods-repo.repo
+    dest: /etc/yum.repos.d/irods.repo
+    validate: yum verify --verify-filenames %s
+
+- name: install_irods_packages
+  yum:
+    state: installed
+    name: irods-icommands
+    enablerepo: renci-irods
+
+- name: deploy_iconfigure_script
+  template:
+    src: iconfigure.j2
+    dest: /usr/local/bin/iconfigure
+    mode: 0755
+    owner: root
+    group: root

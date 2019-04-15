@@ -1,0 +1,23 @@
+---
+scenario:
+  name: docker_default
+  test_sequence:
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - verify
+    - destroy
+
+platforms:
+  - name: MoleculeICAT.aptiv.com
+    image: centos:7
+    volumes:
+       - /sys/fs/cgroup:/sys/fs/cgroup
+  - name: MoleculeIRESC.aptiv.com
+    image: centos:7
+    volumes:
+       - /sys/fs/cgroup:/sys/fs/cgroup
+
+

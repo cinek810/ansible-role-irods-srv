@@ -1,0 +1,23 @@
+---
+- name: ConvergeAsICAT
+  hosts: allA
+  pre_tasks:
+   - 
+  roles:
+    - role: irodsServer
+  become: True
+  become_user: root
+  become_method: sudo
+  vars_files:
+  vars:
+       irods:
+                domain: moleculeDomain.com
+                catalogue:
+                        address: MoleculeICAT.moleculeDomain.com
+                hosts:
+                - addresses: 
+                  - X.X.X.X
+                DNSAddress: servver1.test
+                RRDNS: server.roundrobin
+                
+             
