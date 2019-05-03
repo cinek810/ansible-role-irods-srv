@@ -1,4 +1,2 @@
 - name: restart irods
-  service:
-    name: irods
-    state: restarted
+  shell: /etc/init.d/irods restart
