@@ -1,6 +1,5 @@
 {% if ansible_fqdn == irods.catalogue.address %}
 {% set  irods_host = { "type" : "provider" } %}
-{% set localIrodsUser = irods.catalogue.db_username %}
 {% else %}
 {% set  irods_host = { "type":  "consumer"} %}
 {% endif %}

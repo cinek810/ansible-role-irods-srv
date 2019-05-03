@@ -1,3 +1,9 @@
+- name: InstallSomePrerequirements
+  include: prereq.yml
+
+- name: ConfigureIrodsRepository
+  include: irods-repo.yml
+
 - name: configure_iCAT_database
   include:  irods_icat.yml
   when:  ansible_fqdn == irods.catalogue.address

@@ -1,16 +1,17 @@
 {
-	"admin_password": "{{ irodsServer_adminPassword }}",
+	"admin_password": "{{ irods.adminPassword }}",
 	"host_access_control_config": {
                         "access_entries": []
                     },
 	"host_system_information": {
+
     {# we are using db_username here because postgresql allowes ident authentication to 127.0.0.1 by default #}
 			"service_account_user_name": "{{ localIrodsUser }}",
 			"service_account_group_name": "{{ localIrodsGroup }}"
 		},
 	"hosts_config": 
-    {% include 'hosts_config.json.j2' %}
-  ,
+    {% include 'hosts_config.json.j2' %} ,
+ 
 	"server_config":
     {% include 'server_config.json.j2' %}
   ,

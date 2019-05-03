@@ -1,11 +1,3 @@
-- name: create_irods_users
-  user:
-    name: "{{ item.user_name }}"
-    uid:  "{{ item.user_uid }}"
-  loop:
-    "{{ sysUsers }}"
-  when: sysUsers is defined and item.role_name == "irodsServer" 
-
 - name: install_irods_server_package
   yum:
     name: 
@@ -19,6 +11,11 @@
   hostname: 
     name: "{{ ansible_hostname }}.{{ irods.domain }}"
   when: 'irods.domain is not in ansible_hostname'
+
+- name: overwrite_localIrodsUser_with_DBUser_for_icat
+  set_fact:
+    localIrodsUser: "{{ irods.catalogue.db_username }}"
+  when: ansible_fqdn == irods.catalogue.address
 
 - name: create_unattended_installation_json
   template:
@@ -36,7 +33,7 @@
   environment:
     http_proxy: "{{ intermediate_http_proxy }}"
     https_proxy: "{{ intermediate_proxy }}"
-#  when: create_unattended_installation_json.changed
+  when: create_unattended_installation_json.changed
   async: 120
   poll: 1
 
