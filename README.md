@@ -3,7 +3,11 @@ Repository for ansible role installing and configuring irods (catalogue or resou
 
 ## Quick start with Vagrant
 ### Requirements
-Vagrant file makes use of ```vagrant-hosts``` plugin, it's tested on ```vagrant-libvirt``` provisioner, but the box used should work on other popular provisioners like virtualbox or vmware.
+Obviously you need vagrant - the installation was tested on vagrant 2.4.4 with ```vagrant-libvirt``` provisioner, but the box used should work on other popular provisioners like virtualbox and vmware.
+
+Vagrant file makes use of ```vagrant-hosts``` plugin, you can install it executing: ```vagrant plugin install vagrant-hosts```
+
+You also need ansible to run the provisioner. The setup was tested on ansible 2.5.1.
 ### Commands to use
 If you just want to give it a try, you can just clone the repository:
 ```
@@ -11,6 +15,7 @@ git clone https://github.com/cinek810/ansible-role-irods-srv.git
 ```
 and start three VMs (one server and 2 resources):
 ```
+cd ansible-role-irods-srv ; 
 vagrant up
 ```
 
