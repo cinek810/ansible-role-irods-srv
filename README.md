@@ -19,4 +19,4 @@ cd ansible-role-irods-srv ;
 vagrant up
 ```
 
-
+The blog post describing use of  this setup is [here](https://funinit.wordpress.com/2019/05/04/ansible-based-automated-deployment-of-irods-grid/)
